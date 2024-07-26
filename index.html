@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logger Test</title>
+  <script src="src/logger.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const logger = new Logger();
+      logger.logToBrowserConsole('Logging to browser console!');
+    });
+  </script>
+</head>
+<body>
+  <h1>Check the browser console for logs</h1>
+</body>
+</html>
