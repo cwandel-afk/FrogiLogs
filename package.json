@@ -1,0 +1,13 @@
+{
+  "name": "reslog",
+  "version": "1.0.0",
+  "description": "A logging application that logs messages to CLI, browser console, and a file",
+  "main": "src/test.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node src/test.js"
+  },
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {}
+}
