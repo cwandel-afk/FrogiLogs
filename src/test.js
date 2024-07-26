@@ -72,9 +72,9 @@ function logit() {
 }
 
 const t = new test();
-//t.doLog();
+t.doLog();
 //t.doDetailLog();
 //t.doPrettyLog();
-t.doImportantLog();
+//t.doImportantLog();
 
 logit();
