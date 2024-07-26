@@ -1,33 +1,37 @@
 const messageBuilder = require("./message-builder");
 
 class Logger {
-  log(message, messType = 'condensed') {
+  log(message, messageType = 'condensed') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messType, "LOG")
+    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "LOG")
     console.log(_message);
     //this.#logToBrowserConsole(message);
     //TODO: Browser Message
   }
 
-  error(message, messType = 'condensed') {
+  error(message, messageType = 'condensed') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messType, "ERROR")
+    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "ERROR")
     console.error(_message);
     //this.#errorToBrowserConsole(message);
   }
 
-  info(message, messType = 'condensed') {
+  info(message, messageType = 'condensed') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messType, "INFO")
+    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "INFO")
     console.info(_message);
     //this.#infoToBrowserConsole(message);
   }
 
-  warn(message, messType = 'condensed') {
+  warn(message, messageType = 'condensed') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messType, "WARN")
+    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "WARN")
     console.warn(_message);
     //this.#warnToBrowserConsole(message);
+  }
+
+  logObject(obj, message = '') {
+    console.log(messageBuilder.buildObjectLog(obj, message));
   }
 
   #logToBrowserConsole(message) {
@@ -98,8 +102,4 @@ if (typeof module !== "undefined" && module.exports) {
 if (typeof window !== "undefined") {
   window.Logger = Logger;
 }
-
-const logger = new Logger();
-//TODO: Logger class will simply fire the messages, it does not build them.
-//TODO: Create a message builder. This will include condensed, pretty, detailed, and full types of messages
 //TODO: Create object parser to output JSON nicely

@@ -1,10 +1,10 @@
 const Logger = require('./logger');
 
 const logger = new Logger();
-logger.log('Log message no class or method');
+/* logger.log('Log message no class or method');
 logger.error('Log message no class or method');
 logger.info('Log message no class or method');
-logger.warn('Log message no class or method');
+logger.warn('Log message no class or method'); */
 
 /* logger.log('Log message no class or method', 'detailed');
 logger.error('Log message no class or method', 'detailed');
@@ -71,10 +71,50 @@ function logit() {
     _l.warn('Log message from function', 'important');
 }
 
+const obj = {
+    name: 'John',
+    age: 30,
+    friends: ['Jane', 'Bob'],
+    home: {
+        address: '123 Main St',
+        city: 'Anytown',
+        state: 'CA',
+        zip: '12345'
+    },
+    company: {
+        name: 'Acme Inc',
+        industry: 'Technology',
+        employees: 100
+    },
+    hobbies: [
+        { name: 'reading', level: 'high' },
+        { name: 'hiking', level: 'medium' }
+    ],
+    idiot: true,
+    level: {
+        more: {
+            detail: 'yes',
+            more2: {
+                detail: 'fuck',
+                more3: {
+                    detail: 'wow',
+                    wild: true,
+                    more4: {
+                        message: 'God damn right it goes this deep',
+                        more5: {
+                            wow: true
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+logger.logObject();
 const t = new test();
-t.doLog();
+//t.doLog();
 //t.doDetailLog();
 //t.doPrettyLog();
 //t.doImportantLog();
 
-logit();
+//logit();
