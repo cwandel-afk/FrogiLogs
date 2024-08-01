@@ -10,6 +10,10 @@ const config = {
     entry: './src/logger.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
+        filename: 'goldilogs.bundle.js', // Output bundle filename
+        library: 'GoldiLogs', // Global variable name for your library
+        libraryTarget: 'umd', // Universal Module Definition for compatibility
+        umdNamedDefine: true, // Optional: Named UMD module
     },
     devServer: {
         open: true,

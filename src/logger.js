@@ -1,89 +1,140 @@
 const messageBuilder = require("./message-builder");
 const helpers = require("./helper");
 
+/**
+ * Logger Class for creating readable logs for your browser or CLI
+ * @class Logger
+ * @
+ */
 class Logger {
-  log(message, messageType = 'condensed', obj = '') {
+  /**
+   * Log a message to the console or browser
+   * @param {string} message - The message to be logged
+   * @param {string} messageType (optional) - The type of message to be logged (condensed, detailed, pretty, important)
+   * @param {object} obj (optional) - The object to be logged (only used if messageType is json)
+   */
+  log(message, messageType = "condensed", obj = "") {
     const callerInfo = getCallerInfo();
-    let _message = '';
-    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
-    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "LOG");
+    let _message = "";
+    if (obj !== "") _message += messageBuilder.buildObjectLog(obj, message);
+    else
+      _message = messageBuilder.buildCommandLineMessage(
+        message,
+        callerInfo,
+        messageType,
+        "LOG"
+      );
     console.log(_message);
   }
 
-  error(message, messageType = 'condensed', obj = '') {
+  /**
+   * Log an error to the console or browser
+   * @param {string} message - The message to be logged
+   * @param {string} messageType (optional) - The type of message to be logged (condensed, detailed, pretty, important)
+   * @param {object} obj (optional) - The object to be logged (only used if messageType is json)
+   */
+  error(message, messageType = "condensed", obj = "") {
     const callerInfo = getCallerInfo();
-    let _message = '';
-    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
-    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "ERROR");
+    let _message = "";
+    if (obj !== "") _message += messageBuilder.buildObjectLog(obj, message);
+    else
+      _message = messageBuilder.buildCommandLineMessage(
+        message,
+        callerInfo,
+        messageType,
+        "ERROR"
+      );
     console.error(_message);
   }
 
-  info(message, messageType = 'condensed', obj = '') {
+  /**
+   * Log an information message to the console or browser
+   * @param {string} message - The message to be logged
+   * @param {string} messageType (optional) - The type of message to be logged (condensed, detailed, pretty, important)
+   * @param {object} obj (optional) - The object to be logged (only used if messageType is json)
+   */
+  info(message, messageType = "condensed", obj = "") {
     const callerInfo = getCallerInfo();
-    let _message = '';
-    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
-    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "INFO");
+    let _message = "";
+    if (obj !== "") _message += messageBuilder.buildObjectLog(obj, message);
+    else
+      _message = messageBuilder.buildCommandLineMessage(
+        message,
+        callerInfo,
+        messageType,
+        "INFO"
+      );
     console.info(_message);
   }
 
-  warn(message, messageType = 'condensed', obj = '') {
+  /**
+   * Log a warning to the console or browser
+   * @param {string} message - The message to be logged
+   * @param {string} messageType (optional) - The type of message to be logged (condensed, detailed, pretty, important)
+   * @param {object} obj (optional) - The object to be logged (only used if messageType is json)
+   */
+  warn(message, messageType = "condensed", obj = "") {
     const callerInfo = getCallerInfo();
-    let _message = '';
-    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
-    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "WARN");
+    let _message = "";
+    if (obj !== "") _message += messageBuilder.buildObjectLog(obj, message);
+    else
+      _message = messageBuilder.buildCommandLineMessage(
+        message,
+        callerInfo,
+        messageType,
+        "WARN"
+      );
     console.warn(_message);
   }
 
-  // messages can contain {message, level} which will log differently
+  
+  /**
+   * Log a group of messages to the console or browser
+   * @param {string} groupLabel - The Label of the group you are logging
+   * @param {string} messageType - The type of messages to be logged (condensed, detailed, pretty, important)
+   * @param ...messages - 
+   * each message can be: @type {string} @type {object} with the following structure:
+   * @example { message: "Logging message!", level: "LOG" } 
+   * @field Level - The level of the message ("ERROR", "WARN", "LOG", "INFO")
+   */
   group(groupLabel, messageType, ...messages) {
     console.group(groupLabel);
     for (const message of messages) {
-      if (typeof message === 'object') {
-        this.#logOnMessageLevel(message.message, message.level, messageType)
-      }
-      else {
-        this.log(message, messageType)
+      if (typeof message === "object") {
+        this.#logOnMessageLevel(message.message, message.level, messageType);
+      } else {
+        this.log(message, messageType);
       }
     }
     console.groupEnd();
   }
 
-  logObject(obj, message = '') {
+  /**
+   * Log an object to the console or browser
+   * @param {object} obj - The object to be logged in JSON format
+   * @param {string} message (optional) - The message to be logged
+   */
+  logObject(obj, message = "") {
     console.log(messageBuilder.buildObjectLog(obj, message));
   }
 
   #logOnMessageLevel(message, messageLevel, messageType) {
-    if (messageLevel === 'ERROR') {
+    if (messageLevel === "ERROR") {
       this.error(message, messageType);
-    } else if (messageLevel === 'WARN') {
+    } else if (messageLevel === "WARN") {
       this.warn(message, messageType);
-    } else if (messageLevel === 'LOG') {
+    } else if (messageLevel === "LOG") {
       this.log(message, messageType);
-    } else if (messageLevel === 'INFO') {
+    } else if (messageLevel === "INFO") {
       this.info(message, messageType);
     }
   }
-  /* logToFile(message) { //TODO: implement logging to files AFTER NORMAL LOGGING
-    if (typeof window !== "undefined") {
-      alert("File logging is not supported in the browser.");
-    } else {
-      const fs = require("fs");
-      const path = require("path");
-      const logFilePath = path.resolve(__dirname, "log.txt");
-      fs.appendFileSync(
-        logFilePath,
-        `${new Date().toISOString()} - ${message}\n`
-      );
-    }
-  } */
 }
 
 function getCallerInfo() {
   const stack = new Error().stack ?? "";
   const stackLines = stack.split("\n");
 
-  // Depending on the environment (Node.js, browser, etc.), we may need to adjust this parsing.
-  // This example assumes a typical stack trace format.
   const callerLine = stackLines[3]; // This should point to the caller function
   const matched = callerLine.match(/at (\S+) \(([^)]+)\)/);
 

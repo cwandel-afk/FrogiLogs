@@ -1,8 +1,8 @@
 {
-  "name": "my-webpack-project",
+  "name": "goldilogs",
   "version": "1.0.0",
-  "description": "My webpack project",
-  "main": "src/test.js",
+  "description": "Introducing a sleek and stylish JavaScript logging library that adds a touch of elegance to your debugging experience! Designed with simplicity and aesthetics in mind, this library effortlessly logs messages to both browser consoles and the CLI, making your logs not only functional but also visually appealing. Say goodbye to boring logs and elevate your development with this eye-catching tool!",
+  "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
     "test": "node src/test.js",
@@ -12,7 +12,7 @@
     "watch": "webpack --watch",
     "serve": "webpack serve"
   },
-  "author": "Your Name",
+  "author": "Christopher Wandel",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.25.2",
