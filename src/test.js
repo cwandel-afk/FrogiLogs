@@ -110,11 +110,11 @@ const obj = {
         }
     }
 };
-logger.logObject();
+logger.logObject(obj);
 const t = new test();
-//t.doLog();
-//t.doDetailLog();
-//t.doPrettyLog();
-//t.doImportantLog();
+t.doLog();
+t.doDetailLog();
+t.doPrettyLog();
+t.doImportantLog();
 
 //logit();

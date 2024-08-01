@@ -5,7 +5,8 @@ class Logger {
     const callerInfo = getCallerInfo();
     let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "LOG")
     console.log(_message);
-    //this.#logToBrowserConsole(message);
+    console.log('about to run #logToBrowserConsole');
+    this.#logToBrowserConsole(message);
     //TODO: Browser Message
   }
 
@@ -35,6 +36,7 @@ class Logger {
   }
 
   #logToBrowserConsole(message) {
+    console.log('#logToBrowserConsole');
     if (typeof window !== "undefined" && window.console) {
       window.console.log(message);
     }
@@ -58,7 +60,7 @@ class Logger {
     }
   }
 
-  logToFile(message) { //TODO: implement logging to files AFTER NORMAL LOGGING
+  /* logToFile(message) { //TODO: implement logging to files AFTER NORMAL LOGGING
     if (typeof window !== "undefined") {
       alert("File logging is not supported in the browser.");
     } else {
@@ -70,7 +72,7 @@ class Logger {
         `${new Date().toISOString()} - ${message}\n`
       );
     }
-  }
+  } */
 }
 
 function getCallerInfo() {
@@ -102,4 +104,3 @@ if (typeof module !== "undefined" && module.exports) {
 if (typeof window !== "undefined") {
   window.Logger = Logger;
 }
-//TODO: Create object parser to output JSON nicely
