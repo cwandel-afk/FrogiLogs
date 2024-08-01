@@ -1,65 +1,68 @@
 const messageBuilder = require("./message-builder");
+const helpers = require("./helper");
 
 class Logger {
-  log(message, messageType = 'condensed') {
+  log(message, messageType = 'condensed', obj = '') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "LOG")
+    let _message = '';
+    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
+    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "LOG");
     console.log(_message);
-    console.log('about to run #logToBrowserConsole');
-    this.#logToBrowserConsole(message);
-    //TODO: Browser Message
   }
 
-  error(message, messageType = 'condensed') {
+  error(message, messageType = 'condensed', obj = '') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "ERROR")
+    let _message = '';
+    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
+    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "ERROR");
     console.error(_message);
-    //this.#errorToBrowserConsole(message);
   }
 
-  info(message, messageType = 'condensed') {
+  info(message, messageType = 'condensed', obj = '') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "INFO")
+    let _message = '';
+    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
+    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "INFO");
     console.info(_message);
-    //this.#infoToBrowserConsole(message);
   }
 
-  warn(message, messageType = 'condensed') {
+  warn(message, messageType = 'condensed', obj = '') {
     const callerInfo = getCallerInfo();
-    let _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "WARN")
+    let _message = '';
+    if(obj !== '') _message += messageBuilder.buildObjectLog(obj, message);
+    else _message = messageBuilder.buildCommandLineMessage(message, callerInfo, messageType, "WARN");
     console.warn(_message);
-    //this.#warnToBrowserConsole(message);
+  }
+
+  // messages can contain {message, level} which will log differently
+  group(groupLabel, messageType, ...messages) {
+    console.group(groupLabel);
+    for (const message of messages) {
+      if (typeof message === 'object') {
+        this.#logOnMessageLevel(message.message, message.level, messageType)
+      }
+      else {
+        this.log(message, messageType)
+      }
+    }
+    console.groupEnd();
   }
 
   logObject(obj, message = '') {
     console.log(messageBuilder.buildObjectLog(obj, message));
   }
 
-  #logToBrowserConsole(message) {
-    console.log('#logToBrowserConsole');
-    if (typeof window !== "undefined" && window.console) {
-      window.console.log(message);
+  #logOnMessageLevel(message, messageLevel, messageType) {
+    if (messageLevel === 'ERROR') {
+      this.error(message, messageType);
+    } else if (messageLevel === 'WARN') {
+      this.warn(message, messageType);
+    } else if (messageLevel === 'LOG') {
+      this.log(message, messageType);
+    } else if (messageLevel === 'INFO') {
+      this.info(message, messageType);
     }
   }
-
-  #errorToBrowserConsole(message) {
-    if (typeof window !== "undefined" && window.console) {
-      window.console.error(message);
-    }
-  }
-
-  #infoToBrowserConsole(message) {
-    if (typeof window !== "undefined" && window.console) {
-      window.console.info(message);
-    }
-  }
-
-  #warnToBrowserConsole(message) {
-    if (typeof window !== "undefined" && window.console) {
-      window.console.warn(message);
-    }
-  }
-
   /* logToFile(message) { //TODO: implement logging to files AFTER NORMAL LOGGING
     if (typeof window !== "undefined") {
       alert("File logging is not supported in the browser.");
@@ -79,7 +82,7 @@ function getCallerInfo() {
   const stack = new Error().stack ?? "";
   const stackLines = stack.split("\n");
 
-  // Depending on the environment (Node.js, browser, etc.), you may need to adjust this parsing.
+  // Depending on the environment (Node.js, browser, etc.), we may need to adjust this parsing.
   // This example assumes a typical stack trace format.
   const callerLine = stackLines[3]; // This should point to the caller function
   const matched = callerLine.match(/at (\S+) \(([^)]+)\)/);

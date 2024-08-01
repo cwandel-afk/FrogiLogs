@@ -1,19 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Logger Test</title>
-  <script src="dist/bundle.js"></script>
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const logger = new Logger();
-      logger.log('Logging to browser console!');
-    });
-  </script>
-</head>
-<body>
-  <h1>Check the browser console for logs</h1>
-</body>
-</html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logger Test</title>
+    <script src="dist/bundle.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const logger = new Logger();
+        logger.log("Logging to browser console!", "detailed");
+        const obj = {
+          name: "John",
+          age: 30,
+          friends: ["Jane", "Bob"],
+          home: {
+            address: "123 Main St",
+            city: "Anytown",
+            state: "CA",
+            zip: "12345",
+          },
+          company: {
+            name: "Acme Inc",
+            industry: "Technology",
+            employees: 100,
+          },
+          hobbies: [
+            { name: "reading", level: "high" },
+            { name: "hiking", level: "medium" },
+          ],
+          idiot: true,
+          level: {
+            more: {
+              detail: "yes",
+              more2: {
+                detail: "fuck",
+                more3: {
+                  detail: "wow",
+                  wild: true,
+                  more4: {
+                    message: "God damn right it goes this deep",
+                    more5: {
+                      wow: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        };
+        //logger.logObject(obj);
+        //logger.log("Logging to browser console!", "detailed", obj);
+        const errorLevelMsg = {
+          message: "Radical Error",
+          level: 'ERROR'
+        }
 
+        function doStuff() {
+          logger.log("Check out my function log! :D")
+          logger.group("Cool Group", "condensed", "Woah", errorLevelMsg)
+        }
+        doStuff();
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Check the browser console for logs</h1>
+  </body>
+</html>

@@ -99,10 +99,21 @@ function buildCallerInfo(callerInfo) {
   return null;
 }
 
+const browserMessageStyles = {
+  log: 'color: blue; font-weight: bold;',
+  info: 'color: blue; font-weight: bold;',
+  warn: 'color: orange; font-weight: bold;',
+  error: 'color: red; font-weight: bold;',
+  timestamp: 'color: white; font-weight: bold;',
+  normal: 'color: white; font-weight: normal;',
+  caller: 'color: lightblue; font-weight: bold;',
+}
+
 module.exports = {
   validateString,
   evaluateMessageLevel_CLI,
   evaluateMessageLevel_CLI_BG,
   cliColors,
   buildCallerInfo,
+  browserMessageStyles,
 };
