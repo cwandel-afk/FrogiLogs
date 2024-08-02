@@ -7,6 +7,7 @@ const helpers = require("./helper");
  * @
  */
 class Logger {
+  constructor() {}
   /**
    * Log a message to the console or browser
    * @param {string} message - The message to be logged
