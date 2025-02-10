@@ -5,10 +5,13 @@ coverage/
 .github/
 .vscode/
 node_modules/
+src/
 server.py
 *.log
 *.test.js
 *.test.ts
 jest.config.js
 tsconfig.json
-webpack.config.js 
+webpack.config.js
+.gitignore
+.npmignore 

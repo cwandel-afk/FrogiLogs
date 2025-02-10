@@ -1,15 +1,32 @@
 {
   "name": "frogilogs",
-  "version": "2.0.0",
-  "description": "Introducing a sleek and stylish JavaScript logging library that adds a touch of elegance to your debugging experience! Designed with simplicity and aesthetics in mind, this library effortlessly logs messages to both browser consoles and the CLI, making your logs not only functional but also visually appealing. Say goodbye to boring logs and elevate your development with this eye-catching tool!",
+  "version": "2.0.5",
+  "description": "A powerful TypeScript/JavaScript logging library designed to enhance your debugging workflow with structured, customizable, and feature-rich logging capabilities.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "clean": "rm -rf dist",
-    "build:ts": "tsc",
-    "build:webpack": "webpack --mode production",
-    "build": "npm run clean && npm run build:ts && npm run build:webpack",
+    "mkdir": "mkdir -p dist",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "mkdir -p dist && cp -r src/* dist/ && find dist -name '*.d.ts' -delete",
+    "build:mjs": "mkdir -p dist && cp dist/index.js dist/index.mjs",
+    "build": "npm run clean && npm run mkdir && npm run build:types && npm run build:js && npm run build:mjs",
     "prepublishOnly": "npm run build",
     "start": "ts-node examples/console-example.ts",
     "serve": "python3 server.py"
@@ -36,8 +53,5 @@
     "typescript": "^5.7.3",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
-  },
-  "main": "dist/frogilogs.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts"
+  }
 }

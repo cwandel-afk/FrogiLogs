@@ -9,7 +9,13 @@
         "outDir": "./dist",
         "rootDir": "./src",
         "declaration": true,
-        "declarationDir": "./dist"
+        "declarationDir": "./dist",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "declarationMap": true,
+        "composite": true,
+        "allowJs": true,
+        "emitDeclarationOnly": true
     },
     "include": [
         "src/**/*"
