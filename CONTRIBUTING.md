@@ -9,8 +9,8 @@ To make changes, first fork the repository to your GitHub account.
 
 ### 2. Clone Your Fork
 ```sh
-git clone https://github.com/your-username/repository-name.git
-cd repository-name
+git clone git@github.com:cwandel-afk/FrogiLogs.git
+cd FrogiLogs
 ```
 
 ### 3. Create a New Branch
