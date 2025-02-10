@@ -1,14 +1,14 @@
 {
   "name": "frogilogs",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A powerful TypeScript/JavaScript logging library designed to enhance your debugging workflow with structured, customizable, and feature-rich logging capabilities.",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
     }
@@ -19,7 +19,10 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:cjs && npm run build:esm && npm run build:types",
+    "build:cjs": "webpack --mode production",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:types": "tsc -p tsconfig.types.json",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepare": "npm run build",
