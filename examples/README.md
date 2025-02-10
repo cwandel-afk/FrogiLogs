@@ -109,7 +109,7 @@ Demonstrates browser-based logging (open in a web browser).
 2. Start the development server:
 
    ```bash
-   node server.js
+   python3 server.py
    ```
 
 3. Open in your browser:
