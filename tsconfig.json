@@ -7,15 +7,17 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "outDir": "./dist",
-        "rootDir": "./",
-        "declaration": true
+        "rootDir": "./src",
+        "declaration": true,
+        "declarationDir": "./dist"
     },
     "include": [
-        "src/**/*",
-        "examples/**/*"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules",
-        "dist"
+        "dist",
+        "examples",
+        "**/*.test.ts"
     ]
 } 

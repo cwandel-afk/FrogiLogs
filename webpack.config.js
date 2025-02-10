@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./examples/browser-example.ts",
+  entry: "./src/index.js",
   module: {
     rules: [
       {
@@ -19,11 +19,13 @@ module.exports = {
     },
   },
   output: {
-    filename: "browser-example.js",
+    filename: "frogilogs.js",
     path: path.resolve(__dirname, "dist"),
     library: {
       name: "FrogiLogs",
-      type: "window",
+      type: "umd",
+      umdNamedDefine: true,
     },
+    globalObject: "this",
   },
 };

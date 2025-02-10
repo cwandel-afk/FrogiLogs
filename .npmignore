@@ -1,0 +1,14 @@
+examples/
+logs/
+coverage/
+.git/
+.github/
+.vscode/
+node_modules/
+server.py
+*.log
+*.test.js
+*.test.ts
+jest.config.js
+tsconfig.json
+webpack.config.js 
