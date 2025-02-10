@@ -8,14 +8,17 @@ export { HTMLTransport } from "./transports/htmlTransport";
 export { MarkdownTransport } from "./transports/markdownTransport";
 export { BrowserTransport } from "./transports/browserTransport";
 
-// Type exports
-export interface LoggerOptions {
+// Re-export all types
+export * from "./types";
+
+// Type definitions
+interface LoggerOptions {
   level?: string;
   timestamp?: boolean;
   traceCaller?: boolean;
 }
 
-export interface TransportOptions {
+interface TransportOptions {
   colorize?: boolean;
   gap?: number;
   type?: "standard" | "json" | "detailed";
@@ -24,6 +27,18 @@ export interface TransportOptions {
   styles?: string;
 }
 
-export interface LogMeta {
+interface LogMeta {
   [key: string]: any;
+}
+
+interface LogEntry {
+  timestamp: string | null;
+  level: string;
+  caller: string;
+  message: string;
+  meta: LogMeta;
+}
+
+interface Transport {
+  write(logEntry: LogEntry): void;
 }

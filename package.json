@@ -1,15 +1,16 @@
 {
   "name": "frogilogs",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "A powerful TypeScript/JavaScript logging library designed to enhance your debugging workflow with structured, customizable, and feature-rich logging capabilities.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "files": [
@@ -18,18 +19,12 @@
     "README.md"
   ],
   "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "prepare": "npm run build",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "clean": "rm -rf dist",
-    "mkdir": "mkdir -p dist",
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "mkdir -p dist && cp -r src/* dist/ && find dist -name '*.d.ts' -delete",
-    "build:mjs": "mkdir -p dist && cp dist/index.js dist/index.mjs",
-    "build": "npm run clean && npm run mkdir && npm run build:types && npm run build:js && npm run build:mjs",
-    "prepublishOnly": "npm run build",
-    "start": "ts-node examples/console-example.ts",
-    "serve": "python3 server.py"
+    "dev": "tsc --watch"
   },
   "jest": {
     "preset": "ts-jest",
@@ -45,8 +40,10 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.1",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.x.x",
+    "rimraf": "^5.0.10",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",

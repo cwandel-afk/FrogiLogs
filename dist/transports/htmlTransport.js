@@ -1,371 +1,111 @@
-const fs = require("fs");
-const path = require("path");
-
-class HTMLTransport {
-  constructor(options = {}) {
-    this.options = {
-      filepath: "logs/output.html",
-      logTitle: "Application Logs",
-      ...options,
-    };
-
-    // Ensure the directory exists
-    const dir = path.dirname(this.options.filepath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
     }
-
-    // Create or clear the file with HTML boilerplate and basic styling
-    const htmlHeader = `
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.HTMLTransport = void 0;
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+class HTMLTransport {
+    constructor(options = {}) {
+        var _a;
+        this.entryCount = 0;
+        this.options = {
+            filepath: "logs/output.html",
+            type: "standard",
+            prettyObjects: true,
+            gap: 1,
+            logTitle: "Application Logs",
+            styles: `
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .log-entry { margin-bottom: 20px; padding: 10px; border-radius: 4px; }
+        .ERROR { background-color: #ffebee; }
+        .WARN { background-color: #fff3e0; }
+        .INFO { background-color: #e3f2fd; }
+        .DEBUG { background-color: #f5f5f5; }
+        .metadata { background: #fafafa; padding: 10px; margin-top: 10px; }
+      `,
+            ...options,
+        };
+        const dir = path.dirname(((_a = this.options) === null || _a === void 0 ? void 0 : _a.filepath) || "logs/output.html");
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        const htmlHeader = `
       <!DOCTYPE html>
       <html>
-      <head>
-        <title>${this.options.logTitle}</title>
-        <style>
-          :root {
-            --bg-color:#F2FFEC;
-            --text-color: #333333;
-            --border-color: #dddddd;
-            --meta-bg:#ECF2FF;
-            --search-bg:#ECF2FF;
-          }
-
-          [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #e0e0e0;
-            --border-color: #404040;
-            --meta-bg: #2d2d2d;
-            --search-bg: #2d2d2d;
-          }
-
-          body { 
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            margin: 20px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
-            line-height: 1.5;
-          }
-
-          .log-entry { 
-            border: 1px solid var(--border-color); 
-            margin: 10px 0; 
-            padding: 15px; 
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            transition: transform 0.2s ease;
-          }
-
-          .log-entry:hover {
-            transform: translateY(-2px);
-          }
-
-          .log-content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-          }
-
-          .log-message {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin: 8px 0;
-          }
-
-          .log-details {
-            font-size: 0.9rem;
-            color: var(--text-color);
-            opacity: 0.8;
-          }
-
-          .meta-container {
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-top: 0.5rem;
-          }
-
-          .metadata { 
-            display: none; 
-            background: var(--meta-bg); 
-            padding: 1rem; 
-            border-radius: 6px;
-            max-height: 300px;
-            overflow-y: auto;
-            word-wrap: break-word;
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 0.9rem;
-            flex: 1;
-            margin: 0;
-          }
-
-          .toggle-meta { 
-            cursor: pointer; 
-            font-size: 0.9rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            background-color: var(--meta-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-          }
-
-          .toggle-meta:hover {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-          }
-
-          .ERROR { 
-            background-color: rgba(255, 0, 0, 0.1);
-            border-left: 4px solid rgba(255, 0, 0, 0.7);
-          }
-          .WARN { 
-            background-color: rgba(255, 165, 0, 0.1);
-            border-left: 4px solid rgba(255, 165, 0, 0.7);
-          }
-          .INFO { 
-            background-color: rgba(0, 191, 255, 0.1);
-            border-left: 4px solid rgba(0, 191, 255, 0.7);
-          }
-          
-          .search-container { 
-            position: sticky; 
-            top: 0; 
-            background: var(--search-bg);
-            padding: 15px 0; 
-            border-bottom: 1px solid var(--border-color);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            backdrop-filter: blur(8px);
-          }
-
-          .search-input {
-            width: 300px;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--bg-color);
-            color: var(--text-color);
-            margin-left: 1rem;
-            transition: all 0.2s ease;
-          }
-
-          .search-input:focus {
-            outline: none;
-            border-color: var(--text-color);
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-          }
-
-          .theme-toggle {
-            padding: 10px 20px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-          }
-
-          .theme-toggle:hover {
-            background: var(--text-color);
-            color: var(--bg-color);
-          }
-
-          .hidden { display: none; }
-          .highlight { 
-            background-color: rgba(255, 255, 0, 0.3);
-            padding: 2px 4px;
-            border-radius: 3px;
-          }
-        </style>
-        <script>
-          function toggleMetadata(id) {
-            const meta = document.getElementById('meta-' + id);
-            meta.style.display = meta.style.display === 'none' ? 'block' : 'none';
-          }
-
-          function searchLogs() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const logEntries = document.getElementsByClassName('log-entry');
-            const resultsCount = document.getElementById('resultsCount');
-            let matches = 0;
-
-            // Remove existing highlights
-            document.querySelectorAll('.highlight').forEach(el => {
-              el.outerHTML = el.innerHTML;
-            });
-
-            Array.from(logEntries).forEach(entry => {
-              const text = entry.innerText.toLowerCase();
-              const containsMatch = text.includes(searchTerm);
-              entry.classList.toggle('hidden', searchTerm && !containsMatch);
-              
-              if (containsMatch && searchTerm) {
-                matches++;
-                // Highlight matching text
-                highlightText(entry, searchTerm);
-              }
-            });
-
-            // Update results count
-            if (searchTerm) {
-              resultsCount.textContent = \`Found \${matches} matches\`;
-            } else {
-              resultsCount.textContent = '';
-            }
-          }
-
-          function highlightText(element, searchTerm) {
-            const walker = document.createTreeWalker(
-              element,
-              NodeFilter.SHOW_TEXT,
-              null,
-              false
-            );
-
-            let node;
-            while (node = walker.nextNode()) {
-              const text = node.textContent.toLowerCase();
-              const index = text.indexOf(searchTerm.toLowerCase());
-              
-              if (index >= 0 && node.parentElement.className !== 'highlight') {
-                const spanNode = document.createElement('span');
-                spanNode.className = 'highlight';
-                const before = node.textContent.substring(0, index);
-                const match = node.textContent.substring(index, index + searchTerm.length);
-                const after = node.textContent.substring(index + searchTerm.length);
-                
-                spanNode.textContent = match;
-                const fragment = document.createDocumentFragment();
-                if (before) fragment.appendChild(document.createTextNode(before));
-                fragment.appendChild(spanNode);
-                if (after) fragment.appendChild(document.createTextNode(after));
-                
-                node.parentNode.replaceChild(fragment, node);
-              }
-            }
-          }
-
-          // Add theme toggle function
-          function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            
-            const button = document.getElementById('themeToggle');
-            button.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-          }
-
-          // Initialize theme from localStorage
-          document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            const button = document.getElementById('themeToggle');
-            button.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-          });
-        </script>
-      </head>
-      <body>
-        <h1>${this.options.logTitle}</h1>
-        <div class="search-container">
-          <input 
-            type="text" 
-            id="searchInput" 
-            class="search-input" 
-            placeholder="Search logs..." 
-            oninput="searchLogs()"
-          >
-          <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">
-            🌙 Dark Mode
-          </button>
-          <span id="resultsCount"></span>
-        </div>
-        <div id="log-container">
+        <head>
+          <title>${this.options.logTitle}</title>
+          <style>${this.options.styles}</style>
+        </head>
+        <body>
+          <h1>${this.options.logTitle}</h1>
     `;
-
-    fs.writeFileSync(this.options.filepath, htmlHeader);
-    this.entryCount = 0;
-  }
-
-  write(logEntry) {
-    const { timestamp, level, caller, message, meta } = logEntry;
-    this.entryCount++;
-
-    let output = `
-      <div class="log-entry ${level.toUpperCase()}">
-        <div class="log-content">
-          <div class="log-details">
-            ${timestamp ? `<strong>Time:</strong> ${timestamp} |` : ""}
-            <strong>Level:</strong> ${level.toUpperCase()} |
-            <strong>Caller:</strong> ${caller}
-          </div>
-          <div class="log-message">${message}</div>
-        </div>
-    `;
-
-    if (Object.keys(meta).length > 0) {
-      output += `
-        <div class="meta-container">
-          <div id="meta-${this.entryCount}" class="metadata">
-            ${this.prettifyMeta(meta)}
-          </div>
-          <button class="toggle-meta" onclick="toggleMetadata(${
-            this.entryCount
-          })">
-            Toggle Details
-          </button>
-        </div>
-      `;
+        fs.writeFileSync(this.options.filepath || "logs/output.html", htmlHeader);
     }
-
-    output += `</div>`;
-    this.appendToFile(output);
-  }
-
-  prettifyMeta(meta) {
-    if (!meta || typeof meta !== "object") {
-      return "";
+    write(logEntry) {
+        this.entryCount++;
+        const { timestamp, level, caller, message, meta } = logEntry;
+        let output = `<div class="log-entry ${level.toUpperCase()}">`;
+        if (timestamp) {
+            output += `<strong>Time:</strong> ${timestamp} | `;
+        }
+        output += `<strong>Level:</strong> ${level.toUpperCase()}`;
+        if (caller) {
+            output += ` | <strong>Caller:</strong> ${caller}`;
+        }
+        output += `<br/><strong>Message:</strong> ${message}`;
+        if (Object.keys(meta).length > 0) {
+            output += `<div class="metadata">`;
+            output += `<pre>${this.prettifyMeta(meta)}</pre>`;
+            output += `</div>`;
+        }
+        output += "</div>";
+        if (this.options.gap && this.options.gap > 0) {
+            output += "<br>".repeat(this.options.gap);
+        }
+        this.appendToFile(output);
     }
-
-    let html = "";
-    for (const [key, value] of Object.entries(meta)) {
-      html += `
-        <div>
-          <strong>${key}:</strong> ${JSON.stringify(value)}
-        </div>
-      `;
+    prettifyMeta(meta) {
+        return this.options.prettyObjects
+            ? JSON.stringify(meta, null, 2)
+            : JSON.stringify(meta);
     }
-    return html;
-  }
-
-  appendToFile(content) {
-    fs.appendFileSync(this.options.filepath, content);
-  }
-
-  close() {
-    // Add closing HTML tags when done
-    fs.appendFileSync(
-      this.options.filepath,
-      `
-        </div>
-      </body>
-      </html>
-    `
-    );
-  }
+    appendToFile(content) {
+        fs.appendFileSync(this.options.filepath || "logs/output.html", content);
+    }
+    close() {
+        fs.appendFileSync(this.options.filepath || "logs/output.html", "\n</body></html>");
+    }
 }
-
-module.exports = HTMLTransport;
+exports.HTMLTransport = HTMLTransport;
