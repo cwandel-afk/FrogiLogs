@@ -1,0 +1,256 @@
+
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Application Logs</title>
+        <style>
+          :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --meta-bg: #f5f5f5;
+            --search-bg: #ffffff;
+          }
+
+          [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --border-color: #404040;
+            --meta-bg: #2d2d2d;
+            --search-bg: #2d2d2d;
+          }
+
+          body { 
+            font-family: sans-serif; 
+            margin: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+          }
+
+          .log-entry { 
+            border: 1px solid var(--border-color); 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 4px;
+          }
+
+          .metadata { 
+            display: none; 
+            background: var(--meta-bg); 
+            padding: 10px; 
+            margin-top: 10px;
+            border-radius: 4px;
+          }
+
+          .toggle-meta { 
+            cursor: pointer; 
+            color: #3498db;
+            text-decoration: underline;
+          }
+
+          .ERROR { background-color: rgba(255, 0, 0, 0.4); }
+          .WARN { background-color: rgba(255, 165, 0, 0.4); }
+          .INFO { background-color: rgba(0, 191, 255, 0.4); }
+          
+          .search-container { 
+            position: sticky; 
+            top: 0; 
+            background: var(--search-bg);
+            padding: 10px 0; 
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+
+          .search-input {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-color);
+            color: var(--text-color);
+          }
+
+          .theme-toggle {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+          }
+
+          .theme-toggle:hover {
+            background: var(--meta-bg);
+          }
+
+          .hidden { display: none; }
+          .highlight { background-color: rgba(255, 255, 0, 0.3); }
+        </style>
+        <script>
+          function toggleMetadata(id) {
+            const meta = document.getElementById('meta-' + id);
+            meta.style.display = meta.style.display === 'none' ? 'block' : 'none';
+          }
+
+          function searchLogs() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const logEntries = document.getElementsByClassName('log-entry');
+            const resultsCount = document.getElementById('resultsCount');
+            let matches = 0;
+
+            // Remove existing highlights
+            document.querySelectorAll('.highlight').forEach(el => {
+              el.outerHTML = el.innerHTML;
+            });
+
+            Array.from(logEntries).forEach(entry => {
+              const text = entry.innerText.toLowerCase();
+              const containsMatch = text.includes(searchTerm);
+              entry.classList.toggle('hidden', searchTerm && !containsMatch);
+              
+              if (containsMatch && searchTerm) {
+                matches++;
+                // Highlight matching text
+                highlightText(entry, searchTerm);
+              }
+            });
+
+            // Update results count
+            if (searchTerm) {
+              resultsCount.textContent = `Found ${matches} matches`;
+            } else {
+              resultsCount.textContent = '';
+            }
+          }
+
+          function highlightText(element, searchTerm) {
+            const walker = document.createTreeWalker(
+              element,
+              NodeFilter.SHOW_TEXT,
+              null,
+              false
+            );
+
+            let node;
+            while (node = walker.nextNode()) {
+              const text = node.textContent.toLowerCase();
+              const index = text.indexOf(searchTerm.toLowerCase());
+              
+              if (index >= 0 && node.parentElement.className !== 'highlight') {
+                const spanNode = document.createElement('span');
+                spanNode.className = 'highlight';
+                const before = node.textContent.substring(0, index);
+                const match = node.textContent.substring(index, index + searchTerm.length);
+                const after = node.textContent.substring(index + searchTerm.length);
+                
+                spanNode.textContent = match;
+                const fragment = document.createDocumentFragment();
+                if (before) fragment.appendChild(document.createTextNode(before));
+                fragment.appendChild(spanNode);
+                if (after) fragment.appendChild(document.createTextNode(after));
+                
+                node.parentNode.replaceChild(fragment, node);
+              }
+            }
+          }
+
+          // Add theme toggle function
+          function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const button = document.getElementById('themeToggle');
+            button.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+          }
+
+          // Initialize theme from localStorage
+          document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const button = document.getElementById('themeToggle');
+            button.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+          });
+        </script>
+      </head>
+      <body>
+        <h1>Application Logs</h1>
+        <div class="search-container">
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Search logs..." 
+            oninput="searchLogs()"
+          >
+          <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">
+            🌙 Dark Mode
+          </button>
+          <span id="resultsCount"></span>
+        </div>
+        <div id="log-container">
+    
+      <div class="log-entry INFO">
+        <div>
+          <strong>Time:</strong> 2025-02-10T03:11:46.491Z | 
+          <strong>Level:</strong> INFO | 
+          <strong>Caller:</strong> Anonymous | 
+          <strong>Message:</strong> User authentication
+        </div>
+    
+        <div>
+          <span class="toggle-meta" onclick="toggleMetadata(1)">Toggle Metadata</span>
+          <pre id="meta-1" class="metadata">
+            {
+  "userId": "user123",
+  "loginTime": "2025-02-10T03:11:46.491Z",
+  "browser": "Chrome"
+}
+          </pre>
+        </div>
+      </div>
+      <div class="log-entry INFO">
+        <div>
+          <strong>Time:</strong> 2025-02-10T03:11:46.516Z | 
+          <strong>Level:</strong> INFO | 
+          <strong>Caller:</strong> Constructor | 
+          <strong>Message:</strong> UserService initialized
+        </div>
+    
+        <div>
+          <span class="toggle-meta" onclick="toggleMetadata(2)">Toggle Metadata</span>
+          <pre id="meta-2" class="metadata">
+            {
+  "time": "2025-02-10T03:11:46.516Z",
+  "cache": "enabled"
+}
+          </pre>
+        </div>
+      </div>
+      <div class="log-entry ERROR">
+        <div>
+          <strong>Time:</strong> 2025-02-10T03:11:46.518Z | 
+          <strong>Level:</strong> ERROR | 
+          <strong>Caller:</strong> runExample | 
+          <strong>Message:</strong> Login failed
+        </div>
+    
+        <div>
+          <span class="toggle-meta" onclick="toggleMetadata(3)">Toggle Metadata</span>
+          <pre id="meta-3" class="metadata">
+            {
+  "error": "Invalid credentials",
+  "stack": "Error: Invalid credentials\n    at UserService.login (/home/christopher-wandel/Documents/Development/libs/FrogiLogs/examples/html-example.ts:82:11)\n    at runExample (/home/christopher-wandel/Documents/Development/libs/FrogiLogs/examples/html-example.ts:90:19)\n    at Object.<anonymous> (/home/christopher-wandel/Documents/Development/libs/FrogiLogs/examples/html-example.ts:100:1)\n    at Module._compile (node:internal/modules/cjs/loader:1364:14)\n    at Module.m._compile (/usr/share/nodejs/ts-node/src/index.ts:1624:23)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)\n    at Object.require.extensions.<computed> [as .ts] (/usr/share/nodejs/ts-node/src/index.ts:1627:12)\n    at Module.load (node:internal/modules/cjs/loader:1203:32)\n    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)",
+  "timestamp": "2025-02-10T03:11:46.518Z"
+}
+          </pre>
+        </div>
+      </div>

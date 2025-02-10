@@ -1,62 +1,29 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path");
 
-const isProduction = process.env.NODE_ENV == 'production';
-
-const config = {
-    entry: './src/index.js',
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'frogilogs.bundle.js',
-        library: {
-            name: 'FrogiLogs',
-            type: 'umd',
-            umdNamedDefine: true,
-        },
-        globalObject: 'this',
-    },
-    resolve: {
-        extensions: ['.js', '.ts'],
-    },
-    devServer: {
-        open: true,
-        host: 'localhost',
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'index.html',
-        }),
+module.exports = {
+  entry: "./examples/browser-example.ts",
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
     ],
-    module: {
-        rules: [
-            {
-                test: /\.js$/i,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env'],
-                    },
-                },
-            },
-            {
-                test: /\.ts$/,
-                exclude: /node_modules/,
-                use: 'ts-loader',
-            },
-            {
-                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-                type: 'asset',
-            },
-        ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      fs: false,
+      path: false,
     },
-};
-
-module.exports = () => {
-    if (isProduction) {
-        config.mode = 'production';
-    } else {
-        config.mode = 'development';
-    }
-    return config;
+  },
+  output: {
+    filename: "browser-example.js",
+    path: path.resolve(__dirname, "dist"),
+    library: {
+      name: "FrogiLogs",
+      type: "window",
+    },
+  },
 };

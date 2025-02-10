@@ -1,0 +1,28 @@
+[2025-02-09T19:55:11.171Z] [INFO] (Anonymous) Database connection established
+{
+  "host": "localhost",
+  "port": 27017,
+  "connectionTime": "50ms"
+}
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:55:11.194Z] [INFO] (processUserData) Processing user data batch
+{
+  "batchSize": 100
+}
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:55:12.198Z] [INFO] (processUserData) User data processing completed
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:55:12.200Z] [INFO] (Constructor) DataService initialized
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:55:12.202Z] [ERROR] (DataService.fetchData) Failed to fetch data
+{
+  "error": "API timeout",
+  "timestamp": "2025-02-09T19:55:12.202Z",
+  "retryCount": 3
+}
+--------------------------------------------------------------------------------
+

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FrogiLogs Browser Demo</title>
+</head>
+<body>
+    <h1>FrogiLogs Browser Demo</h1>
+    <p>Open the browser console (F12) to see the logs</p>
+    
+    <button onclick="runDemo()">Run Logging Demo</button>
+
+    <script src="../dist/browser-example.js"></script>
+    <script>
+        let logger;
+
+        function initLogger() {
+            logger = new FrogiLogs.Logger({
+                timestamp: true,
+                traceCaller: true
+            });
+
+            logger.addTransport(
+                new FrogiLogs.BrowserTransport({
+                    colorize: true,
+                    type: 'detailed',
+                    prettyObjects: true,
+                    gap: 1
+                })
+            );
+            logger.addTransport(
+                new FrogiLogs.BrowserTransport({
+                    colorize: true,
+                    type: "standard",
+                    prettyObjects: true,
+                    gap: 1,
+                })
+            );
+        }
+
+        // Initialize logger immediately
+        initLogger();
+
+        function runDemo() {
+            console.clear();
+            console.log('=== Browser Logger Demo ===\n');
+
+            // Debug level with metadata
+            logger.debug('Loading application settings', {
+                theme: 'dark',
+                language: 'en-US',
+                features: ['auth', 'notifications']
+            });
+
+            // Info level with simple message
+            logger.info('Application initialized');
+
+            // Warning level with object
+            logger.warn('Network latency detected', {
+                latency: '150ms',
+                threshold: '100ms',
+                region: 'us-east'
+            });
+
+            // Error level with error object
+            logger.error('Failed to load user profile', {
+                userId: 'USER-123',
+                error: new Error('Network timeout'),
+                attempts: 3
+            });
+
+            // Demonstrate caller tracking
+            setTimeout(function delayedLog() {
+                logger.info('Delayed operation completed');
+            }, 1000);
+
+            // Class method logging
+            class UserService {
+                login() {
+                    logger.info('User login attempt', {
+                        timestamp: new Date(),
+                        browser: navigator.userAgent
+                    });
+                }
+            }
+
+            const userService = new UserService();
+            userService.login();
+        }
+    </script>
+</body>
+</html> 

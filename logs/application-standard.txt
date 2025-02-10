@@ -1,0 +1,47 @@
+[2025-02-09T19:53:13.499Z] [INFO] (Anonymous) Database connection established
+{
+  "host": "localhost",
+  "port": 27017,
+  "connectionTime": "50ms"
+}
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:53:13.502Z] [WARN] (Anonymous) High memory usage detected
+{
+  "currentUsage": "85%",
+  "threshold": "80%",
+  "availableMemory": "2GB"
+}
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:53:13.502Z] [ERROR] (Anonymous) Failed to process transaction
+{
+  "transactionId": "TXN-123",
+  "error": {},
+  "account": {
+    "id": "ACC-456",
+    "type": "savings"
+  }
+}
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:53:13.503Z] [INFO] (processUserData) Processing user data batch
+{
+  "batchSize": 100
+}
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:53:14.508Z] [INFO] (processUserData) User data processing completed
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:53:14.509Z] [INFO] (Constructor) DataService initialized
+--------------------------------------------------------------------------------
+
+[2025-02-09T19:53:14.510Z] [ERROR] (DataService.fetchData) Failed to fetch data
+{
+  "error": "API timeout",
+  "timestamp": "2025-02-09T19:53:14.509Z",
+  "retryCount": 3
+}
+--------------------------------------------------------------------------------
+
