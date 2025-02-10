@@ -32,30 +32,90 @@ export class Logger {
   }
 
   private getCaller(): string {
-    const error = new Error();
-    const stack = error.stack!.split("\n");
+    // Check if we're in a browser environment
+    const isBrowser = typeof window !== "undefined";
 
-    // Find the first non-logger call in the stack
-    const callerLine =
-      stack.find((line, index) => {
-        return (
-          index > 1 && !line.includes("Logger.") && !line.includes("/logger.ts")
-        );
-      }) || "Unknown caller";
+    if (isBrowser) {
+      try {
+        // Create a wrapper function to capture the call context
+        const getCallerName = () => {
+          const error = new Error();
+          const stack = error.stack!.split("\n");
 
-    // Parse the caller line to get useful information
-    const callerInfo = callerLine
-      .trim()
-      .replace(/^at /, "") // Remove the 'at ' prefix
-      .split(" ")[0]; // Get just the function/method name or file path
+          // Find the relevant caller line (skip internal calls)
+          const callerLine =
+            stack.find((line) => {
+              return (
+                line.includes("browser-example.html") &&
+                !line.includes("getCaller") &&
+                !line.includes("formatLogEntry") &&
+                !line.includes("log@") &&
+                !line.includes("debug@") &&
+                !line.includes("info@") &&
+                !line.includes("warn@") &&
+                !line.includes("error@")
+              );
+            }) || "";
 
-    switch (callerInfo) {
-      case "Object.<anonymous>":
+          // Extract function name from the Firefox/Chrome style stack trace
+          // Format: functionName@file:line:column
+          const parts = callerLine.split("@")[0].split("/");
+          const functionName = parts[parts.length - 1];
+
+          // Clean up the function name
+          if (functionName) {
+            // Remove any remaining path segments
+            const cleanName = functionName.split(".").pop() || "";
+            // Handle special cases
+            switch (cleanName) {
+              case "":
+              case "Anonymous":
+              case "anonymous":
+                return "Anonymous";
+              case "new":
+                return "Constructor";
+              default:
+                return cleanName;
+            }
+          }
+
+          return "Anonymous";
+        };
+
+        return getCallerName();
+      } catch (e) {
         return "Anonymous";
-      case "new":
-        return "Constructor";
-      default:
-        return callerInfo;
+      }
+    } else {
+      // Original Node.js implementation
+      const error = new Error();
+      const stack = error.stack!.split("\n");
+
+      // Helper to clean up caller info
+      const cleanCallerInfo = (info: string): string => {
+        // Remove everything after the first parenthesis if it exists
+        const parenthesisIndex = info.indexOf("(");
+        if (parenthesisIndex !== -1) {
+          info = info.substring(0, parenthesisIndex).trim();
+        }
+
+        // Handle standard formats
+        info = info.replace(/^at /, "").split(" ")[0];
+        const parts = info.split(".");
+        return parts[parts.length - 1] || "Anonymous";
+      };
+
+      // Find the first non-logger call in the stack
+      const callerLine =
+        stack.find((line, index) => {
+          const isNotLogger =
+            !line.includes("Logger") &&
+            !line.includes("/logger") &&
+            !line.includes("frogilogs");
+          return index > 1 && isNotLogger;
+        }) || "Unknown caller";
+
+      return cleanCallerInfo(callerLine);
     }
   }
 

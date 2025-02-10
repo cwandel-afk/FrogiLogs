@@ -9,36 +9,48 @@
     
     <button onclick="runDemo()">Run Logging Demo</button>
 
-    <script src="../dist/browser-example.js"></script>
+    <script src="../dist/index.js"></script>
     <script>
         let logger;
 
         function initLogger() {
-            logger = new FrogiLogs.Logger({
-                timestamp: true,
-                traceCaller: true
-            });
+            // Check if FrogiLogs is available
+            if (typeof FrogiLogs === 'undefined') {
+                console.error('FrogiLogs library not loaded');
+                return;
+            }
 
-            logger.addTransport(
-                new FrogiLogs.BrowserTransport({
-                    colorize: true,
-                    type: 'detailed',
-                    prettyObjects: true,
-                    gap: 1
-                })
-            );
-            logger.addTransport(
-                new FrogiLogs.BrowserTransport({
-                    colorize: true,
-                    type: "standard",
-                    prettyObjects: true,
-                    gap: 1,
-                })
-            );
+            try {
+                logger = new FrogiLogs.Logger({
+                    timestamp: true,
+                    traceCaller: true
+                });
+
+                logger.addTransport(
+                    new FrogiLogs.BrowserTransport({
+                        colorize: true,
+                        type: 'detailed',
+                        prettyObjects: true,
+                        gap: 1
+                    })
+                );
+                logger.addTransport(
+                    new FrogiLogs.BrowserTransport({
+                        colorize: true,
+                        type: "standard",
+                        prettyObjects: true,
+                        gap: 1,
+                    })
+                );
+
+                console.log('Logger initialized successfully');
+            } catch (error) {
+                console.error('Error initializing logger:', error);
+            }
         }
 
-        // Initialize logger immediately
-        initLogger();
+        // Wait for the script to load before initializing
+        window.addEventListener('load', initLogger);
 
         function runDemo() {
             console.clear();
