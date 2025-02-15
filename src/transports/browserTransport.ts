@@ -8,7 +8,6 @@ export class BrowserTransport {
     info: string;
     debug: string;
     timestamp: string;
-    caller: string;
     meta: string;
     black: string;
     red: string;
@@ -36,7 +35,6 @@ export class BrowserTransport {
       info: "color: #1976D2; font-weight: bold",
       debug: "color: #616161; font-weight: bold",
       timestamp: "color: #616161",
-      caller: "color: #388E3C",
       meta: "color: #616161",
       black: "color: black",
       red: "color: #D32F2F",
@@ -63,12 +61,8 @@ export class BrowserTransport {
     }
   }
 
-  private prettyPrintObject(object: any): string {
-    return JSON.stringify(object, null, 2);
-  }
-
   private log_standard(logEntry: LogEntry): void {
-    const { timestamp, level, caller, message, meta } = logEntry;
+    const { timestamp, level, message, meta } = logEntry;
     const style = this.styles[level.toLowerCase() as keyof typeof this.styles];
 
     if (this.options.colorize) {
@@ -83,15 +77,6 @@ export class BrowserTransport {
         this.styles.timestamp,
         "color: inherit",
         timestamp
-      );
-    }
-
-    if (caller) {
-      console.log(
-        "%cCaller:%c %s",
-        this.styles.caller,
-        "color: inherit",
-        caller
       );
     }
 
@@ -120,10 +105,10 @@ export class BrowserTransport {
   }
 
   private log_detailed(logEntry: LogEntry): void {
-    const { timestamp, level, caller, message, meta } = logEntry;
+    const { timestamp, level, message, meta } = logEntry;
     const style = this.styles[level.toLowerCase() as keyof typeof this.styles];
 
-    console.group("%c" + "=".repeat(80), this.styles.gray);
+    console.group("%c=== DETAILED LOG ===", this.styles.gray);
 
     if (timestamp) {
       console.log(
@@ -135,16 +120,6 @@ export class BrowserTransport {
     }
 
     console.log("%cLevel:%c %s", style, "color: inherit", level.toUpperCase());
-
-    if (caller) {
-      console.log(
-        "%cCaller:%c %s",
-        this.styles.caller,
-        "color: inherit",
-        caller
-      );
-    }
-
     console.log("%cMessage:%c %s", style, "color: inherit", message);
 
     if (Object.keys(meta).length > 0) {

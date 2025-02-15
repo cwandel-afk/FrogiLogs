@@ -1,6 +1,6 @@
 {
   "name": "frogilogs",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "A powerful TypeScript/JavaScript logging library designed to enhance your debugging workflow with structured, customizable, and feature-rich logging capabilities.",
   "main": "./dist/index.js",
   "module": "./dist/esm/index.js",

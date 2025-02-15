@@ -14,7 +14,6 @@ class Logger {
     this.options = {
       level: "info",
       timestamp: true,
-      traceCaller: false,
       ...options,
     };
 
@@ -74,7 +73,6 @@ class Logger {
     return {
       timestamp: this.options.timestamp ? new Date().toISOString() : null,
       level,
-      caller: this.getCaller(),
       message,
       meta,
     };

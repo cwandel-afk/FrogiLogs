@@ -15,7 +15,6 @@ export * from "./types";
 interface LoggerOptions {
   level?: string;
   timestamp?: boolean;
-  traceCaller?: boolean;
 }
 
 interface TransportOptions {
@@ -34,7 +33,6 @@ interface LogMeta {
 interface LogEntry {
   timestamp: string | null;
   level: string;
-  caller: string;
   message: string;
   meta: LogMeta;
 }

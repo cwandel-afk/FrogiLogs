@@ -8,6 +8,15 @@ export class ConsoleTransport {
     info: string;
     debug: string;
     reset: string;
+    black: string;
+    red: string;
+    green: string;
+    yellow: string;
+    blue: string;
+    magenta: string;
+    cyan: string;
+    white: string;
+    gray: string;
   };
 
   constructor(options: TransportOptions = {}) {
@@ -15,16 +24,25 @@ export class ConsoleTransport {
       colorize: true,
       gap: 0,
       type: "standard",
-      prettyObjects: false,
+      prettyObjects: true,
       ...options,
     };
 
     this.colors = {
-      error: "\x1b[31m",
-      warn: "\x1b[33m",
-      info: "\x1b[36m",
-      debug: "\x1b[90m",
+      error: "\x1b[31m", // Red
+      warn: "\x1b[33m", // Yellow
+      info: "\x1b[36m", // Cyan
+      debug: "\x1b[90m", // Gray
       reset: "\x1b[0m",
+      black: "\x1b[30m",
+      red: "\x1b[31m",
+      green: "\x1b[32m",
+      yellow: "\x1b[33m",
+      blue: "\x1b[34m",
+      magenta: "\x1b[35m",
+      cyan: "\x1b[36m",
+      white: "\x1b[37m",
+      gray: "\x1b[90m",
     };
   }
 
@@ -39,10 +57,6 @@ export class ConsoleTransport {
       default:
         this.log_standard(logEntry);
     }
-  }
-
-  private prettyPrintObject(object: any): string {
-    return JSON.stringify(object, null, 2);
   }
 
   private log_standard(logEntry: LogEntry): void {
@@ -72,38 +86,65 @@ export class ConsoleTransport {
       output += "\n".repeat(this.options.gap);
     }
 
-    console.log(output);
+    switch (level) {
+      case "error":
+        console.error(output);
+        break;
+      case "warn":
+        console.warn(output);
+        break;
+      case "debug":
+        console.debug(output);
+        break;
+      default:
+        console.log(output);
+    }
   }
 
   private log_json(logEntry: LogEntry): void {
     console.log(JSON.stringify(logEntry, null, 2));
-  }
-
-  private log_detailed(logEntry: LogEntry): void {
-    const { timestamp, level, caller, message, meta } = logEntry;
-
-    console.log("=".repeat(80));
-    if (timestamp) {
-      console.log(`Timestamp: ${timestamp}`);
-    }
-    console.log(`Level: ${level.toUpperCase()}`);
-    if (caller) {
-      console.log(`Caller: ${caller}`);
-    }
-    console.log(`Message: ${message}`);
-
-    if (Object.keys(meta).length > 0) {
-      console.log("Metadata:");
-      console.log(
-        this.options.prettyObjects
-          ? this.prettyPrintObject(meta)
-          : JSON.stringify(meta)
-      );
-    }
-
-    console.log("=".repeat(80));
     if (this.options.gap && this.options.gap > 0) {
       console.log("\n".repeat(this.options.gap));
     }
+  }
+
+  private log_detailed(logEntry: LogEntry): void {
+    const { timestamp, level, message, meta } = logEntry;
+    let output = "=".repeat(80) + "\n";
+
+    if (timestamp) {
+      output += `Timestamp: ${timestamp}\n`;
+    }
+
+    if (this.options.colorize) {
+      output += `${this.colors[level as keyof typeof this.colors]}`;
+    }
+
+    output += `Level: ${level.toUpperCase()}\n`;
+    output += `Message: ${message}\n`;
+
+    if (this.options.colorize) {
+      output += this.colors.reset;
+    }
+
+    if (Object.keys(meta).length > 0) {
+      output += "Metadata:\n";
+      output += this.options.prettyObjects
+        ? this.prettyPrintObject(meta)
+        : JSON.stringify(meta, null, 2);
+      output += "\n";
+    }
+
+    output += "=".repeat(80);
+
+    if (this.options.gap && this.options.gap > 0) {
+      output += "\n".repeat(this.options.gap);
+    }
+
+    console.log(output);
+  }
+
+  private prettyPrintObject(obj: any): string {
+    return JSON.stringify(obj, null, 2);
   }
 }

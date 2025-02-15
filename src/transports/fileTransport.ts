@@ -5,13 +5,12 @@ import * as path from "path";
 export class FileTransport {
   private options: TransportOptions & { filepath: string };
 
-  constructor(options: TransportOptions = {}) {
+  constructor(options: TransportOptions & { filepath?: string }) {
     this.options = {
-      filepath: "logs/output.txt",
       type: "standard",
       prettyObjects: true,
       gap: 1,
-      ...options,
+      filepath: options.filepath || "logs/output.txt",
     };
 
     // Ensure the directory exists
@@ -26,9 +25,6 @@ export class FileTransport {
 
   write(logEntry: LogEntry): void {
     switch (this.options.type) {
-      case "standard":
-        this.log_standard(logEntry);
-        break;
       case "json":
         this.log_json(logEntry);
         break;
@@ -40,16 +36,8 @@ export class FileTransport {
     }
   }
 
-  private prettyPrintObject(object: any): string {
-    return JSON.stringify(object, null, 2);
-  }
-
-  private appendToFile(content: string): void {
-    fs.appendFileSync(this.options.filepath, content + "\n");
-  }
-
   private log_standard(logEntry: LogEntry): void {
-    const { timestamp, level, caller, message, meta } = logEntry;
+    const { timestamp, level, message, meta } = logEntry;
     let output = "";
 
     if (timestamp) {
@@ -57,10 +45,6 @@ export class FileTransport {
     }
 
     output += `[${level.toUpperCase()}] `;
-    if (caller) {
-      output += `(${caller}) `;
-    }
-
     output += message;
 
     if (Object.keys(meta).length > 0) {
@@ -80,20 +64,24 @@ export class FileTransport {
   }
 
   private log_json(logEntry: LogEntry): void {
-    this.appendToFile(JSON.stringify(logEntry, null, 2));
+    let output = JSON.stringify(logEntry, null, 2);
+    output += "\n" + "-".repeat(80);
+
+    if (this.options.gap && this.options.gap > 0) {
+      output += "\n".repeat(this.options.gap);
+    }
+
+    this.appendToFile(output);
   }
 
   private log_detailed(logEntry: LogEntry): void {
-    const { timestamp, level, caller, message, meta } = logEntry;
+    const { timestamp, level, message, meta } = logEntry;
     let output = "=".repeat(80) + "\n";
 
     if (timestamp) {
       output += `Timestamp: ${timestamp}\n`;
     }
     output += `Level: ${level.toUpperCase()}\n`;
-    if (caller) {
-      output += `Caller: ${caller}\n`;
-    }
     output += `Message: ${message}\n`;
 
     if (Object.keys(meta).length > 0) {
@@ -111,5 +99,13 @@ export class FileTransport {
     }
 
     this.appendToFile(output);
+  }
+
+  private prettyPrintObject(obj: any): string {
+    return JSON.stringify(obj, null, 2);
+  }
+
+  private appendToFile(content: string): void {
+    fs.appendFileSync(this.options.filepath, content + "\n");
   }
 }
